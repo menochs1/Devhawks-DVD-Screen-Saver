@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DVD Screen Protector Animation</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      background: white;
+    }
+    canvas {
+      display: block;
+      background: white;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="dvdCanvas"></canvas>
+
+<script>
+  const canvas = document.getElementById('dvdCanvas');
+  const ctx = canvas.getContext('2d');
+
+  // Set canvas size to full window
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  const logoImage = new Image();
+  logoImage.src = 'DGwordstranspbg.png';
+
+  const logoWidth = 300;
+  const logoHeight = 160;
+
+  let x = Math.random() * (canvas.width - logoWidth);
+  let y = Math.random() * (canvas.height - logoHeight);
+  let dx = 2 + Math.random() * 3;
+  let dy = 2 + Math.random() * 3;
+
+  let color = getRandomColor();
+
+  function updatePosition() {
+    x += dx;
+    y += dy;
+
+    if (x + logoWidth >= canvas.width || x <= 0) {
+      dx = -dx;
+      color = getRandomColor();
+    }
+    if (y + logoHeight >= canvas.height || y <= 0) {
+      dy = -dy;
+      color = getRandomColor();
+    }
+  }
+
+  function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let c = '#';
+    for (let i = 0; i < 6; i++) {
+      c += letters[Math.floor(Math.random() * 16)];
+    }
+    return c;
+  }
+
+  function drawLogo() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    if (logoImage.complete && logoImage.naturalHeight !== 0) {
+      ctx.drawImage(logoImage, x, y, logoWidth, logoHeight);
+    } else {
+      ctx.fillStyle = color;
+      ctx.fillRect(x, y, logoWidth, logoHeight);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 48px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('DVD', x + logoWidth / 2, y + logoHeight / 2);
+    }
+  }
+
+  function animate() {
+    updatePosition();
+    drawLogo();
+    requestAnimationFrame(animate);
+  }
+
+  logoImage.onload = () => animate();
+  if (logoImage.complete) animate();
+</script>
+
+</body>
+</html>
